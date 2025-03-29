@@ -2,6 +2,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/gobwas/glob v0.0.0-20170212200151-51eb1ee00b6d h1:IngNQgbqr5ZOU0exk395Szrvkzes9Ilk1fmJfkw7d+M=
 github.com/gobwas/glob v0.0.0-20170212200151-51eb1ee00b6d/go.mod h1:d3Ez4x06l9bZtSvzIay5+Yzi0fmZzPgnTbPcKjJAkT8=
+github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
+github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/grailbio/go-dicom v0.0.0-20211105193521-b0e216a1c5cd h1:vEHEX8JYPLR9j65DaRaUrmFPex/nhMNFJ/gs2aUSOTI=
 github.com/grailbio/go-dicom v0.0.0-20211105193521-b0e216a1c5cd/go.mod h1:GEP2d5Mz6UiZmV6QqUYeRKU5x+Sa36qVWtJFR0IZvoA=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
@@ -9,8 +11,6 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOfJA=
 github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
-github.com/suyashkumar/dicom v1.0.7 h1:ghtpwfAZhQTkE8wP080uabmsuqTDpHuca4Z2VqJdbJE=
-github.com/suyashkumar/dicom v1.0.7/go.mod h1:3Ei+G2Lf6Ro87C8iqrnBL075LcNeTF41y7fqQQgiOf8=
 github.com/suyashkumar/dicom v1.0.8-0.20250219044612-0fbaef53037e h1:l7Kq6Yn0b7PJzxcMV92ho/sQtyoBrLIKEyk1zwC0Ztk=
 github.com/suyashkumar/dicom v1.0.8-0.20250219044612-0fbaef53037e/go.mod h1:8Yw14x/0r4fXVnutbCJpF3HiLVbgMS1DQ2HpfbDjq8Y=
 golang.org/x/exp v0.0.0-20240525044651-4c93da0ed11d h1:N0hmiNbwsSNwHBAvR3QB5w25pUwH4tK0Y/RltD1j1h4=

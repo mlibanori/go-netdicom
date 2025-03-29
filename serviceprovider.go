@@ -10,8 +10,8 @@ import (
 	dicom "github.com/grailbio/go-dicom"
 	"github.com/grailbio/go-dicom/dicomio"
 	"github.com/grailbio/go-dicom/dicomlog"
+	"github.com/mlibanori/go-netdicom/commandset"
 	"github.com/mlibanori/go-netdicom/dimse"
-	"github.com/mlibanori/go-netdicom/dimse/dimse_commands"
 	"github.com/mlibanori/go-netdicom/sopclass"
 )
 
@@ -26,7 +26,7 @@ type CMoveResult struct {
 func handleCStore(
 	cb CStoreCallback,
 	connState ConnectionState,
-	c *dimse_commands.CStoreRq, data []byte,
+	c *dimse.CStoreRq, data []byte,
 	cs *serviceCommandState) {
 	status := dimse.Status{Status: dimse.StatusUnrecognizedOperation}
 	if cb != nil {
@@ -37,7 +37,7 @@ func handleCStore(
 			c.AffectedSOPInstanceUID,
 			data)
 	}
-	resp := &dimse_commands.CStoreRsp{
+	resp := &dimse.CStoreRsp{
 		AffectedSOPClassUID:       c.AffectedSOPClassUID,
 		MessageIDBeingRespondedTo: c.MessageID,
 		CommandDataSetType:        dimse.CommandDataSetTypeNull,
@@ -50,10 +50,10 @@ func handleCStore(
 func handleCFind(
 	params ServiceProviderParams,
 	connState ConnectionState,
-	c *dimse_commands.CFindRq, data []byte,
+	c *dimse.CFindRq, data []byte,
 	cs *serviceCommandState) {
 	if params.CFind == nil {
-		cs.sendMessage(&dimse_commands.CFindRsp{
+		cs.sendMessage(&dimse.CFindRsp{
 			AffectedSOPClassUID:       c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo: c.MessageID,
 			CommandDataSetType:        dimse.CommandDataSetTypeNull,
@@ -63,7 +63,7 @@ func handleCFind(
 	}
 	elems, err := readElementsInBytes(data, cs.context.transferSyntaxUID)
 	if err != nil {
-		cs.sendMessage(&dimse_commands.CFindRsp{
+		cs.sendMessage(&dimse.CFindRsp{
 			AffectedSOPClassUID:       c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo: c.MessageID,
 			CommandDataSetType:        dimse.CommandDataSetTypeNull,
@@ -96,14 +96,14 @@ func handleCFind(
 			}
 			break
 		}
-		cs.sendMessage(&dimse_commands.CFindRsp{
+		cs.sendMessage(&dimse.CFindRsp{
 			AffectedSOPClassUID:       c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo: c.MessageID,
 			CommandDataSetType:        dimse.CommandDataSetTypeNonNull,
 			Status:                    dimse.Status{Status: dimse.StatusPending},
 		}, payload)
 	}
-	cs.sendMessage(&dimse_commands.CFindRsp{
+	cs.sendMessage(&dimse.CFindRsp{
 		AffectedSOPClassUID:       c.AffectedSOPClassUID,
 		MessageIDBeingRespondedTo: c.MessageID,
 		CommandDataSetType:        dimse.CommandDataSetTypeNull,
@@ -116,10 +116,10 @@ func handleCFind(
 func handleCMove(
 	params ServiceProviderParams,
 	connState ConnectionState,
-	c *dimse_commands.CMoveRq, data []byte,
+	c *dimse.CMoveRq, data []byte,
 	cs *serviceCommandState) {
 	sendError := func(err error) {
-		cs.sendMessage(&dimse_commands.CMoveRsp{
+		cs.sendMessage(&dimse.CMoveRsp{
 			AffectedSOPClassUID:       c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo: c.MessageID,
 			CommandDataSetType:        dimse.CommandDataSetTypeNull,
@@ -127,7 +127,7 @@ func handleCMove(
 		}, nil)
 	}
 	if params.CMove == nil {
-		cs.sendMessage(&dimse_commands.CMoveRsp{
+		cs.sendMessage(&dimse.CMoveRsp{
 			AffectedSOPClassUID:       c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo: c.MessageID,
 			CommandDataSetType:        dimse.CommandDataSetTypeNull,
@@ -169,7 +169,7 @@ func handleCMove(
 		} else {
 			numSuccesses++
 		}
-		cs.sendMessage(&dimse_commands.CMoveRsp{
+		cs.sendMessage(&dimse.CMoveRsp{
 			AffectedSOPClassUID:            c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo:      c.MessageID,
 			CommandDataSetType:             dimse.CommandDataSetTypeNull,
@@ -179,7 +179,7 @@ func handleCMove(
 			Status:                         dimse.Status{Status: dimse.StatusPending},
 		}, nil)
 	}
-	cs.sendMessage(&dimse_commands.CMoveRsp{
+	cs.sendMessage(&dimse.CMoveRsp{
 		AffectedSOPClassUID:            c.AffectedSOPClassUID,
 		MessageIDBeingRespondedTo:      c.MessageID,
 		CommandDataSetType:             dimse.CommandDataSetTypeNull,
@@ -194,9 +194,9 @@ func handleCMove(
 func handleCGet(
 	params ServiceProviderParams,
 	connState ConnectionState,
-	c *dimse_commands.CGetRq, data []byte, cs *serviceCommandState) {
+	c *dimse.CGetRq, data []byte, cs *serviceCommandState) {
 	sendError := func(err error) {
-		cs.sendMessage(&dimse_commands.CGetRsp{
+		cs.sendMessage(&dimse.CGetRsp{
 			AffectedSOPClassUID:       c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo: c.MessageID,
 			CommandDataSetType:        dimse.CommandDataSetTypeNull,
@@ -204,7 +204,7 @@ func handleCGet(
 		}, nil)
 	}
 	if params.CGet == nil {
-		cs.sendMessage(&dimse_commands.CGetRsp{
+		cs.sendMessage(&dimse.CGetRsp{
 			AffectedSOPClassUID:       c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo: c.MessageID,
 			CommandDataSetType:        dimse.CommandDataSetTypeNull,
@@ -248,7 +248,7 @@ func handleCGet(
 			dicomlog.Vprintf(0, "dicom.serviceProvider: C-GET: Sent %v", resp.Path)
 			numSuccesses++
 		}
-		cs.sendMessage(&dimse_commands.CGetRsp{
+		cs.sendMessage(&dimse.CGetRsp{
 			AffectedSOPClassUID:            c.AffectedSOPClassUID,
 			MessageIDBeingRespondedTo:      c.MessageID,
 			CommandDataSetType:             dimse.CommandDataSetTypeNull,
@@ -259,7 +259,7 @@ func handleCGet(
 		}, nil)
 		cs.disp.deleteCommand(subCs)
 	}
-	cs.sendMessage(&dimse_commands.CGetRsp{
+	cs.sendMessage(&dimse.CGetRsp{
 		AffectedSOPClassUID:            c.AffectedSOPClassUID,
 		MessageIDBeingRespondedTo:      c.MessageID,
 		CommandDataSetType:             dimse.CommandDataSetTypeNull,
@@ -274,14 +274,14 @@ func handleCGet(
 func handleCEcho(
 	params ServiceProviderParams,
 	connState ConnectionState,
-	c *dimse_commands.CEchoRq, data []byte,
+	c *dimse.CEchoRq, data []byte,
 	cs *serviceCommandState) {
 	status := dimse.Status{Status: dimse.StatusUnrecognizedOperation}
 	if params.CEcho != nil {
 		status = params.CEcho(connState)
 	}
 	dicomlog.Vprintf(0, "dicom.serviceProvider: Received E-ECHO: context: %+v, status: %+v", cs.context, status)
-	resp := &dimse_commands.CEchoRsp{
+	resp := &dimse.CEchoRsp{
 		MessageIDBeingRespondedTo: c.MessageID,
 		CommandDataSetType:        dimse.CommandDataSetTypeNull,
 		Status:                    status,
@@ -493,25 +493,25 @@ func RunProviderForConn(conn net.Conn, params ServiceProviderParams) {
 	upcallCh := make(chan upcallEvent, 128)
 	label := newUID("sc")
 	disp := newServiceDispatcher(label)
-	disp.registerCallback(dimse_commands.CommandFieldCStoreRq,
+	disp.registerCallback(dimse.CommandFieldCStoreRq,
 		func(msg dimse.Message, data []byte, cs *serviceCommandState) {
-			handleCStore(params.CStore, getConnState(conn), msg.(*dimse_commands.CStoreRq), data, cs)
+			handleCStore(params.CStore, getConnState(conn), msg.(*dimse.CStoreRq), data, cs)
 		})
-	disp.registerCallback(dimse_commands.CommandFieldCFindRq,
+	disp.registerCallback(dimse.CommandFieldCFindRq,
 		func(msg dimse.Message, data []byte, cs *serviceCommandState) {
-			handleCFind(params, getConnState(conn), msg.(*dimse_commands.CFindRq), data, cs)
+			handleCFind(params, getConnState(conn), msg.(*dimse.CFindRq), data, cs)
 		})
-	disp.registerCallback(dimse_commands.CommandFieldCMoveRq,
+	disp.registerCallback(dimse.CommandFieldCMoveRq,
 		func(msg dimse.Message, data []byte, cs *serviceCommandState) {
-			handleCMove(params, getConnState(conn), msg.(*dimse_commands.CMoveRq), data, cs)
+			handleCMove(params, getConnState(conn), msg.(*dimse.CMoveRq), data, cs)
 		})
-	disp.registerCallback(dimse_commands.CommandFieldCGetRq,
+	disp.registerCallback(dimse.CommandFieldCGetRq,
 		func(msg dimse.Message, data []byte, cs *serviceCommandState) {
-			handleCGet(params, getConnState(conn), msg.(*dimse_commands.CGetRq), data, cs)
+			handleCGet(params, getConnState(conn), msg.(*dimse.CGetRq), data, cs)
 		})
-	disp.registerCallback(dimse_commands.CommandFieldCEchoRq,
+	disp.registerCallback(dimse.CommandFieldCEchoRq,
 		func(msg dimse.Message, data []byte, cs *serviceCommandState) {
-			handleCEcho(params, getConnState(conn), msg.(*dimse_commands.CEchoRq), data, cs)
+			handleCEcho(params, getConnState(conn), msg.(*dimse.CEchoRq), data, cs)
 		})
 	go runStateMachineForServiceProvider(conn, upcallCh, disp.downcallCh, label)
 	for event := range upcallCh {
@@ -524,6 +524,7 @@ func RunProviderForConn(conn net.Conn, params ServiceProviderParams) {
 // Run listens to incoming connections, accepts them, and runs the DICOM
 // protocol. This function never returns.
 func (sp *ServiceProvider) Run() {
+	commandset.Init()
 	for {
 		conn, err := sp.listener.Accept()
 		if err != nil {

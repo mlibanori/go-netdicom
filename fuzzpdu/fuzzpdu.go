@@ -6,7 +6,7 @@ import (
 	"flag"
 
 	"github.com/grailbio/go-dicom/dicomio"
-	"github.com/mlibanori/go-netdicom/dimse/dimse_commands"
+	"github.com/mlibanori/go-netdicom/dimse"
 	"github.com/mlibanori/go-netdicom/pdu"
 )
 
@@ -20,7 +20,7 @@ func Fuzz(data []byte) int {
 		pdu.ReadPDU(in, 4<<20) // nolint: errcheck
 	} else {
 		d := dicomio.NewDecoder(in, binary.LittleEndian, dicomio.ExplicitVR)
-		dimse_commands.ReadMessage(d)
+		dimse.ReadMessage(d)
 	}
 	return 0
 }

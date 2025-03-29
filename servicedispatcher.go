@@ -21,7 +21,7 @@ type serviceDispatcher struct {
 	// A callback to be called when a dimse request message arrives. Keys
 	// are DIMSE CommandField. The callback typically creates a new command
 	// by calling findOrCreateCommand.
-	callbacks map[int]serviceCallback // guarded by mu
+	callbacks map[uint16]serviceCallback // guarded by mu
 
 	// The last message ID used in newCommand(). Used to avoid creating duplicate
 	// IDs.
@@ -119,13 +119,13 @@ func (disp *serviceDispatcher) deleteCommand(cs *serviceCommandState) {
 	disp.mu.Unlock()
 }
 
-func (disp *serviceDispatcher) registerCallback(commandField int, cb serviceCallback) {
+func (disp *serviceDispatcher) registerCallback(commandField uint16, cb serviceCallback) {
 	disp.mu.Lock()
 	disp.callbacks[commandField] = cb
 	disp.mu.Unlock()
 }
 
-func (disp *serviceDispatcher) unregisterCallback(commandField int) {
+func (disp *serviceDispatcher) unregisterCallback(commandField uint16) {
 	disp.mu.Lock()
 	delete(disp.callbacks, commandField)
 	disp.mu.Unlock()
@@ -175,7 +175,7 @@ func newServiceDispatcher(label string) *serviceDispatcher {
 		label:          label,
 		downcallCh:     make(chan stateEvent, 128),
 		activeCommands: make(map[dimse.MessageID]*serviceCommandState),
-		callbacks:      make(map[int]serviceCallback),
+		callbacks:      make(map[uint16]serviceCallback),
 		lastMessageID:  123,
 	}
 }

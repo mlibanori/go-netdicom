@@ -4,17 +4,16 @@ package netdicom
 // http://dicom.nema.org/medical/dicom/current/output/pdf/part08.pdf
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net"
 	"strings"
 	"time"
 
-	"github.com/grailbio/go-dicom/dicomio"
 	"github.com/grailbio/go-dicom/dicomlog"
 	"github.com/grailbio/go-dicom/dicomuid"
 	"github.com/mlibanori/go-netdicom/dimse"
-	"github.com/mlibanori/go-netdicom/dimse/dimse_commands"
 	"github.com/mlibanori/go-netdicom/pdu"
 	"github.com/mlibanori/go-netdicom/pdu/pdu_item"
 )
@@ -317,10 +316,10 @@ var actionDt1 = &stateAction{"DT-1", "Send P-DATA-TF PDU",
 		doassert(event.dimsePayload != nil)
 		command := event.dimsePayload.command
 		doassert(command != nil)
-		e := dicomio.NewBytesEncoder(nil, dicomio.UnknownVR)
-		dimse.EncodeMessage(e, command)
-		if e.Error() != nil {
-			panic(fmt.Sprintf("Failed to encode DIMSE cmd %v: %v", command, e.Error()))
+		e := bytes.Buffer{}
+		err := dimse.EncodeMessage(&e, command)
+		if err != nil {
+			panic(fmt.Sprintf("Failed to encode DIMSE cmd %v: %v", command, err))
 		}
 		dicomlog.Vprintf(1, "dicom.stateMachine(%s): Send DIMSE msg: %v", sm.label, command)
 		pdus := splitDataIntoPDUs(sm, event.dimsePayload.abstractSyntaxName, true /*command*/, e.Bytes())
@@ -400,10 +399,10 @@ var actionAr7 = &stateAction{"AR-7", "Issue P-DATA-TF PDU",
 		doassert(event.dimsePayload != nil)
 		command := event.dimsePayload.command
 		doassert(command != nil)
-		e := dicomio.NewBytesEncoder(nil, dicomio.UnknownVR)
-		dimse.EncodeMessage(e, command)
-		if e.Error() != nil {
-			panic(fmt.Sprintf("dicom.StateMachine %s: Failed to encode DIMSE cmd %v: %v", sm.label, command, e.Error()))
+		e := bytes.Buffer{}
+		err := dimse.EncodeMessage(&e, command)
+		if err != nil {
+			panic(fmt.Sprintf("dicom.StateMachine %s: Failed to encode DIMSE cmd %v: %v", sm.label, command, err))
 		}
 		pdus := splitDataIntoPDUs(sm, event.dimsePayload.abstractSyntaxName, true /*command*/, e.Bytes())
 		for _, pdu := range pdus {
@@ -751,7 +750,7 @@ type stateMachine struct {
 	currentState stateType
 
 	// For assembling DIMSE command from multiple P_DATA_TF fragments.
-	commandAssembler dimse_commands.CommandAssembler
+	commandAssembler dimse.CommandAssembler
 
 	// Only for testing.
 	faults FaultInjector

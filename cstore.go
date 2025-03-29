@@ -9,7 +9,6 @@ import (
 	"github.com/grailbio/go-dicom/dicomtag"
 	"github.com/grailbio/go-dicom/dicomuid"
 	"github.com/mlibanori/go-netdicom/dimse"
-	"github.com/mlibanori/go-netdicom/dimse/dimse_commands"
 )
 
 // Helper function used by C-{STORE,GET,MOVE} to send a dataset using C-STORE
@@ -63,7 +62,7 @@ func runCStoreOnAssociation(upcallCh chan upcallEvent, downcallCh chan stateEven
 		event: evt09,
 		dimsePayload: &stateEventDIMSEPayload{
 			abstractSyntaxName: sopClassUID,
-			command: &dimse_commands.CStoreRq{
+			command: &dimse.CStoreRq{
 				AffectedSOPClassUID:    sopClassUID,
 				MessageID:              messageID,
 				CommandDataSetType:     dimse.CommandDataSetTypeNonNull,
@@ -81,7 +80,7 @@ func runCStoreOnAssociation(upcallCh chan upcallEvent, downcallCh chan stateEven
 		dicomlog.Vprintf(1, "dicom.cstore(%s): resp event: %v", cm.label, event.command)
 		doassert(event.eventType == upcallEventData)
 		doassert(event.command != nil)
-		resp, ok := event.command.(*dimse_commands.CStoreRsp)
+		resp, ok := event.command.(*dimse.CStoreRsp)
 		doassert(ok) // TODO(saito)
 		if resp.Status.Status != 0 {
 			return fmt.Errorf("dicom.cstore(%s): failed: %v", cm.label, resp.String())
